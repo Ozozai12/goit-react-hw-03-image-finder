@@ -45,7 +45,7 @@ export class App extends Component {
     } catch (error) {
       this.setState({ error: 'Something went wrong, please reboot the page' });
     } finally {
-      this.setState({ status: 'idle' });
+      this.setState({ status: 'resolved' });
     }
   }
 
@@ -57,13 +57,9 @@ export class App extends Component {
       this.setState({ status: 'pending' });
       this.searchOnWord();
     }
-    if (prevState.status !== 'pending') {
-      const { height: cardHeight } = document
-        .querySelector('#root')
-        .firstElementChild.getBoundingClientRect();
-
+    if (prevState.status === 'pending' && this.state.page !== 1) {
       window.scrollBy({
-        top: cardHeight * 10,
+        top: 630,
         behavior: 'smooth',
       });
     }
