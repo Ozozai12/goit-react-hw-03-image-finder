@@ -10,12 +10,11 @@ export default class Modal extends Component {
     window.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  handleKeyDown(event) {
-    if (event.code === 'Escape') {
+  handleKeyDown = event => {
+    if (event.code === `Escape`) {
       this.props.closeModal();
-      console.log('click');
     }
-  }
+  };
 
   handleBackdropClick = event => {
     if (event.target.nodeName === 'DIV') {
@@ -25,9 +24,9 @@ export default class Modal extends Component {
 
   render() {
     return (
-      <div className={css.Overlay}>
+      <div className={css.Overlay} onClick={this.handleBackdropClick}>
         <div className={css.Modal}>
-          <img src="" alt="" />
+          <img src={this.props.modalImage} alt="On view" />
         </div>
       </div>
     );

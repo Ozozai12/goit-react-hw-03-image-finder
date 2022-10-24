@@ -5,6 +5,7 @@ import css from 'components/App.module.css';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import Modal from './Modal/Modal';
+import { ThreeDots } from 'react-loader-spinner';
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
@@ -16,6 +17,8 @@ export class App extends Component {
     page: 1,
     showModal: false,
     modalImage: '',
+    totalHits: null,
+    status: 'idle',
   };
 
   toggleModal = () => {
@@ -28,6 +31,14 @@ export class App extends Component {
 
   loadMore = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
+    const { height: cardHeight } = document
+      .querySelector('#root')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
   };
 
   async searchOnWord() {
@@ -35,12 +46,14 @@ export class App extends Component {
       const response = await axios.get(
         `?key=29521336-a1469f4927f87a0f3197cf310&q=${this.state.query}&image_type=photo&orientation=horizontal&per_page=12&page=${this.state.page}`
       );
-
       this.setState(prevState => ({
         gallery: prevState.gallery.concat(response.data.hits),
+        totalHits: response.data.totalHits,
       }));
     } catch (error) {
       this.setState({ error: 'Something went wrong, please reboot the page' });
+    } finally {
+      this.setState({ status: 'idle' });
     }
   }
 
@@ -49,26 +62,42 @@ export class App extends Component {
       prevState.page !== this.state.page ||
       prevState.query !== this.state.query
     ) {
+      this.setState({ status: 'pending' });
       this.searchOnWord();
     }
   };
 
+  onImageClick = event => {
+    const openImage = this.state.gallery.find(
+      image => image.webformatURL === event.currentTarget.src
+    ).largeImageURL;
+
+    this.setState({
+      modalImage: openImage,
+      showModal: true,
+    });
+  };
+
   render() {
-    const { error } = this.state;
+    const { error, gallery, modalImage, totalHits, status } = this.state;
     return (
       <div className={css.App}>
-        {this.state.showModal && (
-          <Modal
-            modalImage={this.state.modalImage}
-            closeModal={this.toggleModal}
-          />
-        )}
         <Searchbar onSubmit={this.searchQuery} />
-        {error && <h2>{error}</h2>}
+        {error && <h2 className={css.Error}>{error}</h2>}
 
-        <ImageGallery photos={this.state.gallery} onClick={this.toggleModal} />
+        <ImageGallery photos={gallery} onClick={this.onImageClick} />
 
-        {this.state.gallery.length > 0 && <Button onClick={this.loadMore} />}
+        {status !== 'pending' &&
+          gallery.length > 0 &&
+          gallery.length !== totalHits && <Button onClick={this.loadMore} />}
+        {this.state.showModal && (
+          <Modal modalImage={modalImage} closeModal={this.toggleModal} />
+        )}
+        {status === 'pending' && (
+          <div className={css.Loader}>
+            <ThreeDots height="80" width="80" radius="9" color="#3f51b5" />
+          </div>
+        )}
       </div>
     );
   }
