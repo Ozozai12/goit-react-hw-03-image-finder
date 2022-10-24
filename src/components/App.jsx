@@ -31,14 +31,6 @@ export class App extends Component {
 
   loadMore = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
-    const { height: cardHeight } = document
-      .querySelector('#root')
-      .firstElementChild.getBoundingClientRect();
-
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
-    });
   };
 
   async searchOnWord() {
@@ -64,6 +56,16 @@ export class App extends Component {
     ) {
       this.setState({ status: 'pending' });
       this.searchOnWord();
+    }
+    if (prevState.status !== 'pending') {
+      const { height: cardHeight } = document
+        .querySelector('#root')
+        .firstElementChild.getBoundingClientRect();
+
+      window.scrollBy({
+        top: cardHeight * 10,
+        behavior: 'smooth',
+      });
     }
   };
 

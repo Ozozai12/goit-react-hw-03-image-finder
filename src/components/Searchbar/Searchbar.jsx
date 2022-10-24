@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import css from './Searchbar.module.css';
+import { HiSearch } from 'react-icons/hi';
 
 export class Searchbar extends Component {
   state = {
@@ -22,7 +23,9 @@ export class Searchbar extends Component {
       <header className={css.Searchbar}>
         <form className={css.SearchForm} onSubmit={this.handleSubmit}>
           <button type="submit" className={css.SearchFormButton}>
-            <span className={css.SearchFormButtonLabel}>Search</span>
+            <span className={css.SearchFormButtonLabel}>
+              <HiSearch style={{ width: '25px', height: '25px' }} />
+            </span>
           </button>
 
           <input
