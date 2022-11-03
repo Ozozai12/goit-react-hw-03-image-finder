@@ -65,13 +65,16 @@ export class App extends Component {
     }
   };
 
-  onImageClick = event => {
+  largeImageFind = event => {
     const openImage = this.state.gallery.find(
       image => image.webformatURL === event.currentTarget.src
     ).largeImageURL;
+    return openImage;
+  };
 
+  onImageClick = event => {
     this.setState({
-      modalImage: openImage,
+      modalImage: this.largeImageFind(event),
       showModal: true,
     });
   };
